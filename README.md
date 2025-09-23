@@ -1,4 +1,6 @@
 ```sh
+setopt INTERACTIVE_COMMENTS
+
 mamba create -n emission -c conda-forge -c bokeh photochem=0.6.7 numpy=1.24 mpi4py dill tqdm astropy=6.1 matplotlib pandas pip xarray pathos bokeh=2.4.3 wget unzip tar pymultinest=2.12 scipy=1.11
 mamba activate emission
 
@@ -45,8 +47,6 @@ wget https://archive.stsci.edu/hlsps/reference-atlases/hlsp_reference-atlases_hs
 tar -xvf hlsp_reference-atlases_hst_multi_pheonix-models_multi_v3_synphot5.tar
 mv grp/redcat/trds/grid/phoenix picasofiles/grp/redcat/trds/grid/
 rm hlsp_reference-atlases_hst_multi_pheonix-models_multi_v3_synphot5.tar
-
-# Need to get
 
 # Exports
 export PYSYN_CDBS=$(pwd)"picasofiles/grp/redcat/trds"
