@@ -14,6 +14,15 @@ cd ..
 rm -rf photochem-3fe116524a8abd24d7f5afbdc39e44e32ef99dd2
 rm 3fe116524a8abd24d7f5afbdc39e44e32ef99dd2.zip
 
+# Update photochem_clima_data
+wget https://github.com/nicholaswogan/photochem_clima_data/archive/cba05ffaae3ab7ef11e27bb40570807014d718c0.zip
+unzip cba05ffaae3ab7ef11e27bb40570807014d718c0.zip
+cd photochem_clima_data-cba05ffaae3ab7ef11e27bb40570807014d718c0
+python -m pip install --no-deps --no-build-isolation . -v
+cd ..
+rm -rf photochem_clima_data-cba05ffaae3ab7ef11e27bb40570807014d718c0
+rm cba05ffaae3ab7ef11e27bb40570807014d718c0.zip
+
 # Install PICASO
 wget https://github.com/natashabatalha/picaso/archive/4d5eded20c38d5e0189d49f643518a7b336a5768.zip
 unzip 4d5eded20c38d5e0189d49f643518a7b336a5768.zip
