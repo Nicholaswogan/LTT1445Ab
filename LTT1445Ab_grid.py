@@ -23,6 +23,8 @@ def initialize_climate_model(Teq):
         Teff=st.Teff,
         metal=st.metal,
         logg=st.logg,
+        catdir='sphinx',
+        sphinx_filename='data/sphinx.h5'
     )
     c.verbose = False
     return c
