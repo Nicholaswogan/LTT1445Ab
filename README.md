@@ -1,7 +1,7 @@
 ```sh
 setopt INTERACTIVE_COMMENTS
 
-mamba create -n emission -c conda-forge -c bokeh -y photochem=0.6.7 numpy=1.24 mpi4py dill tqdm astropy=6.0 matplotlib pandas pip xarray pathos bokeh=2.4.3 wget unzip tar pymultinest=2.12 scipy=1.11
+mamba create -n emission -c conda-forge -c bokeh -y photochem=0.6.7 numpy=1.24 mpi4py dill tqdm astropy=6.0 matplotlib pandas pip xarray pathos bokeh=2.4.3 wget unzip tar pymultinest=2.12 scipy=1.11 corner ultranest
 mamba activate emission
 
 # Prereqs for Photochem build
