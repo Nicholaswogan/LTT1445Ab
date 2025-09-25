@@ -28,7 +28,9 @@ def quantile_to_uniform(quantile, lower_bound, upper_bound):
 
 def model_atm_raw(x, wavl):
 
-    log10PH2O, log10PCO2, log10PO2, log10PSO2, chi, albedo, Teq, Teff, R_planet_star = x
+    log10PH2O, log10PCO2, log10PO2, log10PSO2, log10chi, albedo, Teq, Teff, R_planet_star = x
+
+    chi = 10.0**log10chi
 
     # Inputs to model grid
     y = np.array([log10PH2O, log10PCO2, log10PO2, log10PSO2, chi, albedo, Teq])
@@ -62,7 +64,7 @@ def prior_atm(cube):
     params[1] = quantile_to_uniform(cube[1], -7, 2) # log10PCO2
     params[2] = quantile_to_uniform(cube[2], -5, 2) # log10PO2
     params[3] = quantile_to_uniform(cube[3], -7, -1) # log10PSO2
-    params[4] = quantile_to_uniform(cube[4], 0.05, 0.8) # chi
+    params[4] = quantile_to_uniform(cube[4], np.log10(0.05), np.log10(0.8)) # log10chi
     params[5] = quantile_to_uniform(cube[5], 0, 0.4) # albedo
     params[6] = truncnorm(-2, 2, loc=431, scale=23).ppf(cube[6]) # Teq
     params[7] = truncnorm(-2, 2, loc=3340, scale=150).ppf(cube[7]) # Teff
@@ -157,12 +159,31 @@ def make_lrs_data(filename):
 
     return data_dict
 
+def make_F1500W_data(fpfs, ntrans):
+
+    err_one_transit = 36e-6 # from proposal
+    fpfs_err = err_one_transit/np.sqrt(ntrans)
+
+    bins = np.empty((1,2))
+    bins[0,:] = np.array([13.6, 16.5])
+    wv = np.array([np.mean([13.6, 16.5])])
+    wv_err = np.array([(16.5 - 13.6)/2])
+
+    data_dict = {}
+    data_dict['bins'] = bins
+    data_dict['fpfs'] = np.array([fpfs])
+    data_dict['err'] = np.array([fpfs_err])
+    data_dict['wv'] = wv
+    data_dict['wv_err'] = wv_err
+
+    return data_dict
+
 def make_cases():
 
     cases = {}
 
     param_names_atm = [
-        'log10PH2O', 'log10PCO2', 'log10PO2', 'log10PSO2', 'chi', 
+        'log10PH2O', 'log10PCO2', 'log10PO2', 'log10PSO2', 'log10chi', 
         'albedo', 'Teq', 'Teff', 'R_planet_star'
     ]
     param_names_rock = [
@@ -179,9 +200,19 @@ def make_cases():
     cases['rock_16'] = make_loglike_prior(data_dict, param_names_rock, model_rock, model_rock_raw, prior_rock)
     cases['atm_16'] = make_loglike_prior(data_dict, param_names_atm, model_atm, model_atm_raw, prior_atm)
 
+    # # F1500W eclipse centered on instant re-radiation
+    # data_dict = make_F1500W_data(184.845e-6, 1)
+    # cases['rock_F1500W_hot'] = make_loglike_prior(data_dict, param_names_rock, model_rock, model_rock_raw, prior_rock)
+    # cases['atm_F1500W_hot'] = make_loglike_prior(data_dict, param_names_atm, model_atm, model_atm_raw, prior_atm)
+
+    # # F1500W eclipse with half instant re-radiation
+    # data_dict = make_F1500W_data(184.845e-6/2, 1)
+    # cases['rock_F1500W_cool'] = make_loglike_prior(data_dict, param_names_rock, model_rock, model_rock_raw, prior_rock)
+    # cases['atm_F1500W_cool'] = make_loglike_prior(data_dict, param_names_atm, model_atm, model_atm_raw, prior_atm)
+
     return cases
 
-# WAVL, SPECTRA, PRESS, TEMP = make_interpolators('results/LTT1445Ab_v1.h5')
+WAVL, SPECTRA, PRESS, TEMP = make_interpolators('results/LTT1445Ab_v1.h5')
 SPHINX = hotrocks.sphinx_interpolator('data/sphinx.h5')
 RETRIEVAL_CASES = make_cases()
 
