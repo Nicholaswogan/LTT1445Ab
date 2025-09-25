@@ -28,7 +28,7 @@ def quantile_to_uniform(quantile, lower_bound, upper_bound):
 
 def model_atm_raw(x, wavl):
 
-    log10PH2O, log10PCO2, log10PO2, log10PSO2, chi, albedo, Teq, Teff, R_planet1, R_star1 = x
+    log10PH2O, log10PCO2, log10PO2, log10PSO2, chi, albedo, Teq, Teff, R_planet_star = x
 
     # Inputs to model grid
     y = np.array([log10PH2O, log10PCO2, log10PO2, log10PSO2, chi, albedo, Teq])
@@ -41,12 +41,8 @@ def model_atm_raw(x, wavl):
     wavl_star = stars.make_bins(wv_star)
     F_star = stars.rebin(wavl_star, F_star, wavl) # rebin
 
-    # Convert
-    R_planet = R_planet1*constants.R_earth.value
-    R_star = R_star1*constants.R_sun.value
-
     # fpfs
-    fpfs = F_planet/F_star * (R_planet**2/R_star**2)
+    fpfs = F_planet/F_star * (R_planet_star)**2
 
     return fpfs
 
@@ -70,13 +66,12 @@ def prior_atm(cube):
     params[5] = quantile_to_uniform(cube[5], 0, 0.4) # albedo
     params[6] = truncnorm(-2, 2, loc=431, scale=23).ppf(cube[6]) # Teq
     params[7] = truncnorm(-2, 2, loc=3340, scale=150).ppf(cube[7]) # Teff
-    params[8] = truncnorm(-2, 2, loc=1.34, scale=0.085).ppf(cube[8]) # R_planet
-    params[9] = truncnorm(-2, 2, loc=0.271, scale=0.0145).ppf(cube[9]) # R_star
+    params[8] = truncnorm(-2, 2, loc=0.0454, scale=0.0012).ppf(cube[8]) # R_planet_star
     return params   
 
 def model_rock_raw(x, wavl):
 
-    albedo, Teq, Teff, R_planet1, R_star1 = x
+    albedo, Teq, Teff, R_planet_star = x
 
     # Compute the dayside temperature
     flux = stars.equilibrium_temperature_inverse(Teq, albedo)
@@ -92,12 +87,8 @@ def model_rock_raw(x, wavl):
     wavl_star = stars.make_bins(wv_star)
     F_star = stars.rebin(wavl_star, F_star, wavl) # rebin
 
-    # Convert
-    R_planet = R_planet1*constants.R_earth.value
-    R_star = R_star1*constants.R_sun.value
-
     # fpfs
-    fpfs = F_planet/F_star * (R_planet**2/R_star**2)
+    fpfs = F_planet/F_star * (R_planet_star)**2
 
     return fpfs
 
@@ -116,8 +107,7 @@ def prior_rock(cube):
     params[0] = quantile_to_uniform(cube[0], 0, 0.4) # albedo
     params[1] = truncnorm(-2, 2, loc=431, scale=23).ppf(cube[1]) # Teq
     params[2] = truncnorm(-2, 2, loc=3340, scale=150).ppf(cube[2]) # Teff
-    params[3] = truncnorm(-2, 2, loc=1.34, scale=0.085).ppf(cube[3]) # R_planet
-    params[4] = truncnorm(-2, 2, loc=0.271, scale=0.0145).ppf(cube[4]) # R_star
+    params[3] = truncnorm(-2, 2, loc=0.0454, scale=0.0012).ppf(cube[3]) # R_planet_star
     return params   
 
 def make_loglike(model, data_dict):
@@ -173,10 +163,10 @@ def make_cases():
 
     param_names_atm = [
         'log10PH2O', 'log10PCO2', 'log10PO2', 'log10PSO2', 'chi', 
-        'albedo', 'Teq', 'Teff', 'R_planet', 'R_star'
+        'albedo', 'Teq', 'Teff', 'R_planet_star'
     ]
     param_names_rock = [
-        'albedo', 'Teq', 'Teff', 'R_planet', 'R_star'
+        'albedo', 'Teq', 'Teff', 'R_planet_star'
     ]
 
     # 8 bin data
