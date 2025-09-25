@@ -45,9 +45,14 @@ def initialize_picaso():
 def model(x):
     log10PH2O, log10PCO2, log10PO2, log10PSO2, chi, albedo, Teq = x
 
+    p = PICASO
+
     c = initialize_climate_model(Teq)
   
+    # Set albedos
     c.set_custom_albedo(np.array([1.0]), np.array([albedo]))
+    p.set_custom_albedo(np.array([1.0]), np.array([albedo]))
+
     c.chi = chi
     P_i = np.ones(len(c.species_names))*1e-15
     P_i[c.species_names.index('H2O')] = 10.0**log10PH2O
@@ -64,7 +69,7 @@ def model(x):
     T = np.append(c.T_surf,c.T)
 
     # Get emission spectra
-    _, fp, _ = PICASO.fpfs(c.make_picaso_atm(), wavl=WAVL)
+    _, fp, _ = p.fpfs(c.make_picaso_atm(), wavl=WAVL)
 
     # Save
     result = {
@@ -98,8 +103,8 @@ def main():
         model_func=model, 
         gridvals=gridvals,
         gridnames=gridnames, 
-        filename='results/LTT144Ab_v1.h5', 
-        progress_filename='results/LTT144Ab_v1.log',
+        filename='results/LTT1445Ab_v1.h5', 
+        progress_filename='results/LTT1445Ab_v1.log',
         common={'wavl': WAVL}
     )
 
