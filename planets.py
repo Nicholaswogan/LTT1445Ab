@@ -54,3 +54,24 @@ LTT1445A = Star(
     logg=4.97, # Exo.Mast
     planets={'b': LTT1445Ab}
 )
+
+# Soto et al. (2021)
+
+LHS1478b = Planet(
+    radius=1.242,
+    mass=2.33,
+    Teq=595,
+    transit_duration=0.705*60*60,
+    eclipse_duration=0.705*60*60, # Assumed same as transit.
+    a=0.01848,
+    stellar_flux=stars.equilibrium_temperature_inverse(595, 0.0)
+)
+
+LHS1478 = Star(
+    radius=0.246,
+    Teff=3381,
+    metal=-0.13,
+    kmag=8.8, # Exo.Mast
+    logg=4.87,
+    planets={'b': LHS1478b}
+)
