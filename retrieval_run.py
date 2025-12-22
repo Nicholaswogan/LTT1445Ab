@@ -12,6 +12,7 @@ import os
 import pickle
 from pymultinest.solve import solve
 import gridutils
+import pandas as pd
 
 def make_interpolators(filename):
     g = gridutils.GridInterpolator(filename)
@@ -25,6 +26,147 @@ def make_interpolators(filename):
 
 def quantile_to_uniform(quantile, lower_bound, upper_bound):
     return quantile*(upper_bound - lower_bound) + lower_bound
+
+def pt_profile_broken_logP(
+    P,
+    T_ref,
+    P_ref=0.1,
+    P_break=1e-2,
+    slope_up_per_dec=-50.0,
+    slope_lo_per_dec=300.0,
+):
+    """
+    Piecewise-linear temperature profile in log10(P) with one break.
+
+    Parameters
+    ----------
+    P : array_like
+        Pressures [bar] for each atmospheric layer (non-uniform is fine).
+        Must be > 0 everywhere. Top-of-atmosphere can be 1e-7 bar (recommended).
+    T_ref : float
+        Temperature [K] at the reference pressure P_ref.
+    P_ref : float, optional
+        Reference pressure [bar] at which T_ref is defined (default 0.1 bar).
+        Keep this fixed across retrievals so parameters stay interpretable.
+    P_break : float, optional
+        Transition pressure [bar] where the lapse rate changes.
+        For P < P_break the "upper" slope applies; for P >= P_break the "lower" slope applies.
+    slope_up_per_dec : float, optional
+        dT/d(log10 P) [K per decade] for the upper atmosphere (P < P_break).
+        Negative values permit thermal inversions aloft; positive values heat with depth.
+    slope_lo_per_dec : float, optional
+        dT/d(log10 P) [K per decade] for the lower atmosphere (P >= P_break).
+        Typically positive (warming with depth); values near the dry adiabat are plausible.
+
+    Returns
+    -------
+    T : ndarray
+        Temperature [K] at each input pressure.
+    """
+    P = np.asarray(P, dtype=float)
+    if np.any(P <= 0.0):
+        raise ValueError("All pressures must be positive (in bar).")
+
+    logP = np.log10(P)
+    logPref = np.log10(P_ref)
+    logPbrk = np.log10(P_break)
+
+    # Temperature is linear in log10(P), with continuity at P_break
+    # Region 1: P <= P_break  (upper)
+    dlog_up = logP - logPref
+    T_up = T_ref + slope_up_per_dec * dlog_up
+
+    # Region 2: P >= P_break (lower), with continuity offset
+    # First compute T at the break using the upper slope:
+    T_at_break = T_ref + slope_up_per_dec * (logPbrk - logPref)
+    dlog_lo = logP - logPbrk
+    T_lo = T_at_break + slope_lo_per_dec * dlog_lo
+
+    # Select piecewise without branching loops
+    upper_mask = logP <= logPbrk
+    T = np.where(upper_mask, T_up, T_lo)
+    return T
+
+def model_atmfree_raw(x, wavl):
+
+    log10PH2O, log10PCO2, log10PO2, log10PSO2, albedo, T_ref, log10P_break, slope_up, slope_lo, Teff, R_planet_star = x
+
+    p = LTT1445Ab_grid.PICASO
+    p.set_custom_albedo(np.array([1.0]), np.array([albedo]))
+
+    # compute atm
+    Pi = 10.0**np.array([log10PH2O, log10PCO2, log10PO2, log10PSO2])
+    P_surf = np.sum(Pi)
+    mix = Pi/P_surf
+
+    # Get P-grid
+    nz = 60
+    P = np.logspace(-7,np.log10(P_surf),nz)
+    T = pt_profile_broken_logP(
+        P,
+        T_ref=T_ref,
+        P_ref=0.1,
+        P_break=10.0**log10P_break,
+        slope_up_per_dec=slope_up,
+        slope_lo_per_dec=slope_lo,
+    )
+    if np.any(T < 50) or np.any(T > 3000):
+        return np.ones(len(wavl)-1)*np.nan
+
+    atm = {
+        'pressure': P,
+        'temperature': T,
+        'H2O': np.ones(nz)*mix[0],
+        'CO2': np.ones(nz)*mix[1],
+        'O2': np.ones(nz)*mix[2],
+        'SO2': np.ones(nz)*mix[3],
+    }
+    atm = pd.DataFrame(atm)
+    # Spectrum
+    _, F_planet, _ = p.fpfs(atm, wavl=WAVL)
+
+    # Stellar flux
+    st = planets.LTT1445A
+    wv_star, F_star = SPHINX(Teff, st.metal, st.logg, rescale_to_Teff=False) # CGS units
+    wavl_star = stars.make_bins(wv_star)
+    F_star = stars.rebin(wavl_star, F_star, wavl) # rebin
+
+    # fpfs
+    fpfs = F_planet/F_star * (R_planet_star)**2
+
+    return fpfs
+
+def model_atmfree(x, wv_bins):
+    wavl = LTT1445Ab_grid.WAVL
+    fpfs1 = model_atmfree_raw(x, wavl)
+
+    fpfs = np.ones(len(wv_bins))
+
+    if np.any(np.isnan(fpfs1)):
+        return fpfs*np.nan
+
+    for i,b in enumerate(wv_bins):
+        fpfs[i] = stars.rebin(wavl, fpfs1, b)
+
+    return fpfs
+
+def prior_atmfree(cube):
+
+    # log10PH2O, log10PCO2, log10PO2, log10PSO2, albedo, T_ref, log10P_break, slope_up, slope_lo, Teff, R_planet_star
+
+    params = np.zeros_like(cube)
+    params[0] = quantile_to_uniform(cube[0], -4, 2) # log10PH2O
+    params[1] = quantile_to_uniform(cube[1], -7, 2) # log10PCO2
+    params[2] = quantile_to_uniform(cube[2], -5, 2) # log10PO2
+    params[3] = quantile_to_uniform(cube[3], -7, -1) # log10PSO2
+    params[4] = quantile_to_uniform(cube[4], 0, 0.4) # albedo
+    params[5] = quantile_to_uniform(cube[5], 100, 2000) # T_ref
+    params[6] = quantile_to_uniform(cube[6], -6, 1) # log10P_break
+    params[7] = quantile_to_uniform(cube[7], -400, 400) # slope_up
+    params[8] = quantile_to_uniform(cube[8], 0, 1000) # slope_lo
+    params[9] = truncnorm(-2, 2, loc=3340, scale=150).ppf(cube[9]) # Teff
+    params[10] = truncnorm(-2, 2, loc=0.0454, scale=0.0012).ppf(cube[10]) # R_planet_star
+    return params  
 
 def model_atm_raw(x, wavl):
 
@@ -118,9 +260,10 @@ def make_loglike(model, data_dict):
         y = data_dict['fpfs']
         e = data_dict['err']
         resulty = model(cube, data_bins)
+        if np.any(np.isnan(resulty)):
+            return -1.0e100 # outside implicit priors
         loglikelihood = -0.5*np.sum((y - resulty)**2/e**2)
         return loglikelihood
-    
     return loglike
     
 def make_loglike_prior(data_dict, param_names, model, model_raw, prior):
@@ -159,9 +302,10 @@ def make_lrs_data(filename):
 
     return data_dict
 
-def make_F1500W_data(fpfs, ntrans):
+def make_F1500W_data(fpfs, ntrans, err_one_transit=None):
 
-    err_one_transit = 36e-6 # from proposal
+    if err_one_transit == None:
+        err_one_transit = 36e-6 # from proposal
     fpfs_err = err_one_transit/np.sqrt(ntrans)
 
     bins = np.empty((1,2))
@@ -182,6 +326,11 @@ def make_cases():
 
     cases = {}
 
+    param_names_atmfree = [
+        'log10PH2O', 'log10PCO2', 'log10PO2', 'log10PSO2', 
+        'albedo', 'T_ref', 'log10P_break', 'slope_up', 
+        'slope_lo', 'Teff', 'R_planet_star'
+    ]
     param_names_atm = [
         'log10PH2O', 'log10PCO2', 'log10PO2', 'log10PSO2', 'log10chi', 
         'albedo', 'Teq', 'Teff', 'R_planet_star'
@@ -199,6 +348,7 @@ def make_cases():
     data_dict = make_lrs_data('data/LTT1445Ab_Sparta_16.txt')
     cases['rock_16'] = make_loglike_prior(data_dict, param_names_rock, model_rock, model_rock_raw, prior_rock)
     cases['atm_16'] = make_loglike_prior(data_dict, param_names_atm, model_atm, model_atm_raw, prior_atm)
+    # cases['atmfree_16'] = make_loglike_prior(data_dict, param_names_atmfree, model_atmfree, model_atmfree_raw, prior_atmfree)
 
     # # F1500W eclipse centered on instant re-radiation
     # data_dict = make_F1500W_data(184.845e-6, 1)
@@ -219,6 +369,7 @@ RETRIEVAL_CASES = make_cases()
 if __name__ == '__main__':
 
     models_to_run = list(RETRIEVAL_CASES.keys())
+    models_to_run = ['atmfree_16']
     for model_name in models_to_run:
         # Setup directories
         outputfiles_basename = f'pymultinest/{model_name}/{model_name}'

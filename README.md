@@ -36,9 +36,13 @@ cp -r picaso-4d5eded20c38d5e0189d49f643518a7b336a5768/reference picasofiles/
 rm -rf picaso-4d5eded20c38d5e0189d49f643518a7b336a5768
 rm 4d5eded20c38d5e0189d49f643518a7b336a5768.zip
 
+python -m pip install pandexo.engine==2.0.0 -v
+
 python input_files.py
 
 # Exports
 export picaso_refdata=$(pwd)"/picasofiles/reference/"
 export PYSYN_CDBS="NOT_A_PATH_1234567890"
+# export picaso_refdata="/Users/nicholas/Documents/Research_local/NPP/JWST_proposals/cycle5/hotrocks/picasofiles/reference/"
+# export PYSYN_CDBS="/Users/nicholas/Applications/picaso_data/grp/redcat/trds"
 ```
