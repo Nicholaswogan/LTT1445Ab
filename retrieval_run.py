@@ -348,7 +348,7 @@ def make_cases():
     data_dict = make_lrs_data('data/LTT1445Ab_Sparta_16.txt')
     cases['rock_16'] = make_loglike_prior(data_dict, param_names_rock, model_rock, model_rock_raw, prior_rock)
     cases['atm_16'] = make_loglike_prior(data_dict, param_names_atm, model_atm, model_atm_raw, prior_atm)
-    # cases['atmfree_16'] = make_loglike_prior(data_dict, param_names_atmfree, model_atmfree, model_atmfree_raw, prior_atmfree)
+    cases['atmfree_16'] = make_loglike_prior(data_dict, param_names_atmfree, model_atmfree, model_atmfree_raw, prior_atmfree)
 
     # # F1500W eclipse centered on instant re-radiation
     # data_dict = make_F1500W_data(184.845e-6, 1)
