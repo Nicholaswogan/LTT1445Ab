@@ -1,0 +1,254 @@
+{
+  "GJ1132b": {
+    "hostname": "GJ 1132",
+    "nea_name": "GJ 1132 b",
+    "planet": {
+      "a_au": 0.0157,
+      "mass_me": 1.83704819246,
+      "radius_re": 1.19151465,
+      "teq_k": 583.8,
+      "transit_duration_s": 2759.2560000000003
+    },
+    "star": {
+      "kmag": 8.322,
+      "logg": 5.037,
+      "metal": -0.17,
+      "radius_rsun": 0.2211,
+      "teff_k": 3229.0
+    }
+  },
+  "GJ3473b": {
+    "hostname": "GJ 3473",
+    "nea_name": "GJ 3473 b",
+    "planet": {
+      "a_au": 0.01589,
+      "mass_me": 1.86,
+      "radius_re": 1.264,
+      "teq_k": 773.0,
+      "transit_duration_s": 3420.0
+    },
+    "star": {
+      "kmag": 8.829001,
+      "logg": 4.81,
+      "metal": 0.11,
+      "radius_rsun": 0.364,
+      "teff_k": 3347.0
+    }
+  },
+  "GJ357b": {
+    "hostname": "GJ 357",
+    "nea_name": "GJ 357 b",
+    "planet": {
+      "a_au": 0.036,
+      "mass_me": 1.84,
+      "radius_re": 1.2,
+      "teq_k": 518.0,
+      "transit_duration_s": 4647.599999999999
+    },
+    "star": {
+      "kmag": 6.475,
+      "logg": 4.94,
+      "metal": -0.12,
+      "radius_rsun": 0.337,
+      "teff_k": 3505.0
+    }
+  },
+  "GJ3929b": {
+    "hostname": "GJ 3929",
+    "nea_name": "GJ 3929 b",
+    "planet": {
+      "a_au": 0.0252,
+      "mass_me": 1.75,
+      "radius_re": 1.09,
+      "teq_k": 568.0,
+      "transit_duration_s": 4284.0
+    },
+    "star": {
+      "kmag": 7.869,
+      "logg": 4.89,
+      "metal": -0.02,
+      "radius_rsun": 0.32,
+      "teff_k": 3384.0
+    }
+  },
+  "GJ486b": {
+    "hostname": "GJ 486",
+    "nea_name": "GJ 486 b",
+    "planet": {
+      "a_au": 0.01714,
+      "mass_me": 2.77,
+      "radius_re": 1.289,
+      "teq_k": 696.3,
+      "transit_duration_s": 3656.88
+    },
+    "star": {
+      "kmag": 6.362,
+      "logg": 4.9111,
+      "metal": -0.15,
+      "radius_rsun": 0.3243,
+      "teff_k": 3317.0
+    }
+  },
+  "HD260655b": {
+    "hostname": "HD 260655",
+    "nea_name": "HD 260655 b",
+    "planet": {
+      "a_au": 0.02933,
+      "mass_me": 2.14,
+      "radius_re": 1.24,
+      "teq_k": 709.0,
+      "transit_duration_s": 4140.0
+    },
+    "star": {
+      "kmag": 5.862,
+      "logg": 5.2,
+      "metal": -0.43,
+      "radius_rsun": 0.439,
+      "teff_k": 3803.0
+    }
+  },
+  "L9859c": {
+    "hostname": "L 98-59",
+    "nea_name": "L 98-59 c",
+    "planet": {
+      "a_au": 0.0309,
+      "mass_me": 2.0,
+      "radius_re": 1.329,
+      "teq_k": 526.0,
+      "transit_duration_s": 4608.0
+    },
+    "star": {
+      "kmag": 7.101,
+      "logg": 4.91,
+      "metal": -0.46,
+      "radius_rsun": 0.3155,
+      "teff_k": 3415.0
+    }
+  },
+  "LHS1140c": {
+    "hostname": "LHS 1140",
+    "nea_name": "LHS 1140 c",
+    "planet": {
+      "a_au": 0.027,
+      "mass_me": 1.91,
+      "radius_re": 1.272,
+      "teq_k": 422.0,
+      "transit_duration_s": 4067.9999999999995
+    },
+    "star": {
+      "kmag": 8.821,
+      "logg": 5.041,
+      "metal": -0.15,
+      "radius_rsun": 0.2159,
+      "teff_k": 3096.0
+    }
+  },
+  "LHS1478b": {
+    "hostname": "LHS 1478",
+    "nea_name": "LHS 1478 b",
+    "planet": {
+      "a_au": 0.01848,
+      "mass_me": 2.33,
+      "radius_re": 1.242,
+      "teq_k": 595.0,
+      "transit_duration_s": 2538.0
+    },
+    "star": {
+      "kmag": 8.767,
+      "logg": 4.87,
+      "metal": -0.13,
+      "radius_rsun": 0.246,
+      "teff_k": 3381.0
+    }
+  },
+  "LTT1445Ab": {
+    "hostname": "LTT 1445 A",
+    "nea_name": "LTT 1445 A b",
+    "planet": {
+      "a_au": 0.0381,
+      "mass_me": 2.73,
+      "radius_re": 1.34,
+      "teq_k": 431.0,
+      "transit_duration_s": 4917.6
+    },
+    "star": {
+      "kmag": 6.496,
+      "logg": 4.97389,
+      "metal": -0.34,
+      "radius_rsun": 0.271,
+      "teff_k": 3562.0
+    }
+  },
+  "TOI1468b": {
+    "hostname": "TOI-1468",
+    "nea_name": "TOI-1468 b",
+    "planet": {
+      "a_au": 0.02107,
+      "mass_me": 3.04,
+      "radius_re": 1.401,
+      "teq_k": 683.5,
+      "transit_duration_s": 3924.0000000000005
+    },
+    "star": {
+      "kmag": 8.497,
+      "logg": 4.846,
+      "metal": -0.01,
+      "radius_rsun": 0.3714,
+      "teff_k": 3376.0
+    }
+  },
+  "TOI270b": {
+    "hostname": "TOI-270",
+    "nea_name": "TOI-270 b",
+    "planet": {
+      "a_au": 0.03197,
+      "mass_me": 1.48,
+      "radius_re": 1.28,
+      "teq_k": 600.0,
+      "transit_duration_s": 4658.400000000001
+    },
+    "star": {
+      "kmag": 8.251,
+      "logg": 4.872,
+      "metal": -0.17,
+      "radius_rsun": 0.38,
+      "teff_k": 3506.0
+    }
+  },
+  "TRAPPIST-1b": {
+    "hostname": "TRAPPIST-1",
+    "nea_name": "TRAPPIST-1 b",
+    "planet": {
+      "a_au": 0.01154,
+      "mass_me": 1.374,
+      "radius_re": 1.116,
+      "teq_k": 397.6,
+      "transit_duration_s": 2163.6
+    },
+    "star": {
+      "kmag": 10.296,
+      "logg": 5.2396,
+      "metal": 0.052,
+      "radius_rsun": 0.1192,
+      "teff_k": 2566.0
+    }
+  },
+  "TRAPPIST-1c": {
+    "hostname": "TRAPPIST-1",
+    "nea_name": "TRAPPIST-1 c",
+    "planet": {
+      "a_au": 0.0158,
+      "mass_me": 1.308,
+      "radius_re": 1.097,
+      "teq_k": 339.7,
+      "transit_duration_s": 2521.8
+    },
+    "star": {
+      "kmag": 10.296,
+      "logg": 5.2396,
+      "metal": 0.052,
+      "radius_rsun": 0.1192,
+      "teff_k": 2566.0
+    }
+  }
+}
